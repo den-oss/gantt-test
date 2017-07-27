@@ -24,13 +24,14 @@ var cachePath = './out/out.html';
 var runUrl = (req) => baseUrl(req) + '/run';
 var runCachedUrl = (req) => baseUrl(req) + '/out/out.html';
 var runAppFromFileProtocol = true;
+var logsUrl = (req) => baseUrl(req) + '/logs/';
 
 //-------------
 
 app.use('/build', express.static('app/build/production/CGA'));
 
 app.use('/app', express.static('app'));
-
+app.use('/logs', express.static('logs'));
 app.use('/out', express.static('out'));
 
 app.get('/', function (req, res) {
@@ -40,6 +41,7 @@ app.get('/', function (req, res) {
     out += "<li>note: you must run chrome like that: <pre>"+'/opt/google/chrome/chrome --disable-web-security --user-data-dir="/var/tmp/Chrome dev session"'+"</pre></li>";
     out += "<li><a href='"+runUrl(req)+"'>run on server (live)</a></li>";
     out += "<li><a href='"+runCachedUrl(req)+"'>run on server (cached)</a></li>";
+    out += "<li><a href='"+logsUrl(req)+"'>logs</a></li>";
     out += "</ul>";
     res.send(out);
 });
