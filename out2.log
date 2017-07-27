@@ -1,0 +1,55 @@
+[2017-07-27T21:14:38.913Z] url loaded ./app/build/production/CGA/index.html?projectId=a4G6A000000L0bs&showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E
+[2017-07-27T21:14:41.263Z] data load initiated
+[2017-07-27T21:14:41.263Z] _onInitDataLoad()
+[2017-07-27T21:14:42.988Z] initiated loading bulks
+[2017-07-27T21:15:17.836Z] proccesing response, requestIndex #0
+[2017-07-27T21:15:20.082Z] proccesing response, requestIndex #1
+[2017-07-27T21:15:20.087Z] proccesing response, requestIndex #2
+[2017-07-27T21:15:41.957Z] data retrrived from server after: 60.694 sec
+[2017-07-27T21:15:41.957Z] START loading data to gantt...
+[2017-07-27T21:16:40.640Z] get ScheduleLock status
+[2017-07-27T21:16:40.649Z] { className: 'GanttManagementRequest',
+  actionName: 'getGanttVersions',
+  projectId: 'a4G6A000000L0bs',
+  researchId: null,
+  constructId: null,
+  versionType: 'simulation' }
+[2017-07-27T21:16:40.650Z] {"className":"GanttManagementRequest","actionName":"getGanttVersions","projectId":"a4G6A000000L0bs","researchId":null,"constructId":null,"versionType":"simulation"}
+[2017-07-27T21:16:40.653Z] Get dynamic predecessors
+[2017-07-27T21:19:41.695Z] START FULL adjusting calendar...
+[2017-07-27T21:19:43.193Z] END FULL adjusting calendar
+[2017-07-27T21:19:43.193Z] END loading data to Gantt...
+[2017-07-27T21:19:43.193Z] before dynamicPredecessorsListPromise
+[2017-07-27T21:19:44.683Z] { unableToLockRow: null,
+  message: 'OK',
+  isError: false,
+  fullMessage: 'OK',
+  expcetionType: null,
+  errorLevel: null,
+  developerMessage: null,
+  lockingUserName: 'Stephen Klee',
+  lockingUserId: '0056A000000yCTbQAM',
+  isLocked: true,
+  canUnlockGantt: false }
+[2017-07-27T21:19:54.067Z] { unableToLockRow: null,
+  message: 'OK',
+  isError: false,
+  fullMessage: 'OK',
+  expcetionType: null,
+  errorLevel: null,
+  developerMessage: null,
+  ganttVersions: [ { versionType: 'online', Id: 'online', Description: 'Online' } ] }
+[2017-07-27T21:19:56.466Z] { unableToLockRow: null,
+  message: 'OK',
+  isError: false,
+  fullMessage: 'OK',
+  expcetionType: null,
+  errorLevel: null,
+  developerMessage: null,
+  dynamicPredecessor: [] }
+[2017-07-27T21:19:56.481Z] aaaa [object Object]
+[2017-07-27T21:19:56.481Z] bbbb [object Object]
+[2017-07-27T21:19:56.482Z] cccc [object Object]
+[2017-07-27T21:20:00.657Z] dddd [object Object]
+[2017-07-27T21:20:00.657Z] _onAppLoaded()
+[2017-07-27T21:20:05.706Z] out.html saved

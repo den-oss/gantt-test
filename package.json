@@ -5,12 +5,15 @@
   "dependencies": {
     "canvas-prebuilt": "^1.6.5-prerelease.1",
     "dom-storage": "^2.0.2",
+    "express": "^4.15.3",
+    "fs": "0.0.1-security",
     "jsdom__no_cors": "^11.1.4",
     "log-timestamp": "^0.1.2",
+    "os": "^0.1.1",
     "request__no_405": "^2.81.2"
   },
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node app.js"
   }
 }
