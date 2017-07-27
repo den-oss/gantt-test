@@ -41,7 +41,7 @@ app.get('/', function (req, res) {
     out += "<li>note: you must run chrome like that: <pre>"+'/opt/google/chrome/chrome --disable-web-security --user-data-dir="/var/tmp/Chrome dev session"'+"</pre></li>";
     out += "<li><a href='"+runUrl(req)+"'>run on server (live)</a></li>";
     out += "<li><a href='"+runCachedUrl(req)+"'>run on server (cached)</a></li>";
-    out += "<li><a href='"+logsUrl(req)+"'>logs</a></li>";
+    out += "<li><a href='"+logsUrl(req)+"/out2.log"+"'>logs</a></li>";
     out += "</ul>";
     res.send(out);
 });
