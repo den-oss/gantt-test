@@ -26,7 +26,7 @@ var options = {
 //JSDOM.fromURL(url, options).then(dom => {
 JSDOM.fromFile(filePath, options).then(dom => {
 	var window = dom.window;
-	window.location._search = '?projectId=a4G6A000000L0bs&showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E#en';
+	window.location.search = '?projectId=a4G6A000000L0bs&showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E#en';
 	console.log('url loaded', filePath, window.location.search);
 	window.localStorage = new Storage(null, { strict: false, ws: '  ' });
     window.sessionStorage = new Storage(null, { strict: true });
