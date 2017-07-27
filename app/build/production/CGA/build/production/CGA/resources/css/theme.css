@@ -1,0 +1,101 @@
+
+.sch-ganttpanel .x-grid-cell {
+    height : 24px;
+}
+
+.sch-gantt-task-baseline .sch-gantt-task-bar {
+    background: #d0308b;
+    border: 1px solid #d0308b;
+    height: 3px;
+}
+
+.x-column-header {
+    font-size: 12px !important;
+}
+
+.x-form-text-default{
+    /*min-height: 0px !important;*/
+    padding: 5px 10px 4px !important;
+    /*margin-top: 2px !important;*/
+}
+
+.filterfield .x-form-text-wrap:before{
+    font-size: 12px !important;
+}
+
+.x-form-cb-wrap-default{
+    height: 20px !important;
+}
+
+.x-form-item-body-default{
+    min-height: 20px !important;
+}
+
+.sch-ganttpanel .sch-column-header, .sch-simple-timeaxis .sch-header-row-compact .sch-column-header{
+    padding:0px !important;
+}
+
+.sch-simple-timeheader{
+    padding:7px 10px 6px !important;
+}
+
+.x-column-header-inner {
+    /*height:26px;*/
+}
+
+.x-panel-header-default-horizontal.x-header-noborder{
+    padding:2px !important;
+}
+
+.gnt-calendarmanager .x-tree-icon-parent,
+.gnt-calendarmanager .x-tree-icon-leaf {
+    display : inline;
+}
+
+.gnt-calendarmanager .x-grid-cell {
+    height : 20px;
+}
+
+.sch-ganttpanel .x-grid-inner-locked .x-grid-cell {
+    border-left-color   : transparent;
+    border-bottom-color : transparent;
+    border-top-color    : transparent;
+    color               : #555;
+}
+
+.x-grid-inner-locked .x-grid-cell,
+.sch-gantt-label {
+    transition : color 0.3s;
+}
+
+.x-grid-inner-locked .x-grid-item-selected .x-grid-cell,
+.x-grid-item-selected .sch-gantt-label {
+    color : #222;
+}
+
+.x-grid-inner-locked :not(.x-grid-item-selected) .x-grid-cell {
+    background-color : transparent;
+}
+
+.x-grid-inner-locked .x-grid-cell-inner,
+.x-grid-inner-locked .x-tree-node-text {
+    line-height : 19px;
+}
+
+.root-row .x-grid-cell-inner {
+    padding-left : 10px;
+    font-size    : 120%;
+}
+
+.root-row .x-grid-cell {
+    border-bottom : 1px solid #bbb;
+}
+
+/* EOF Left tree styles */
+
+/* Dependency styling */
+.crossPD-line {
+    border : dashed;
+}
+
+/* EOF Dependency styling */
