@@ -35,7 +35,7 @@ JSDOM.fromFile(filePath, options).then(dom => {
 	};
 	window._onAppLoaded = () => {
 		console.log('_onAppLoaded()');
-		fs.writeFile("./out.html", dom.serialize(), function(err) {
+		fs.writeFile("./out/out.html", dom.serialize(), function(err) {
 		    if(err) {
 		        return console.log(err);
 		    }

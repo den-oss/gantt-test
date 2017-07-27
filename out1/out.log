@@ -1,0 +1,57 @@
+denis@denis-System-Product-Name:~/projs/gantt-test$ node index.js 
+[2017-07-27T14:32:48.757Z] loaded  http://localhost/plots/build/production/CGA/index.html?projectId=a4G6A000000L0bs&showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E
+[2017-07-27T14:32:53.889Z] data load initiated
+[2017-07-27T14:32:53.889Z] _onInitDataLoad()
+[2017-07-27T14:32:55.578Z] initiated loading bulks
+[2017-07-27T14:34:18.989Z] proccesing response, requestIndex #0
+[2017-07-27T14:34:20.973Z] proccesing response, requestIndex #1
+[2017-07-27T14:34:20.981Z] proccesing response, requestIndex #2
+[2017-07-27T14:35:17.579Z] data retrrived from server after: 143.69 sec
+[2017-07-27T14:35:17.580Z] START loading data to gantt...
+[2017-07-27T14:37:49.998Z] get ScheduleLock status
+[2017-07-27T14:37:50.078Z] { className: 'GanttManagementRequest',
+  actionName: 'getGanttVersions',
+  projectId: 'a4G6A000000L0bs',
+  researchId: null,
+  constructId: null,
+  versionType: 'simulation' }
+[2017-07-27T14:37:50.083Z] {"className":"GanttManagementRequest","actionName":"getGanttVersions","projectId":"a4G6A000000L0bs","researchId":null,"constructId":null,"versionType":"simulation"}
+[2017-07-27T14:37:50.094Z] Get dynamic predecessors
+[2017-07-27T14:45:34.746Z] START FULL adjusting calendar...
+[2017-07-27T14:45:38.344Z] END FULL adjusting calendar
+[2017-07-27T14:45:38.344Z] END loading data to Gantt...
+[2017-07-27T14:45:38.345Z] before dynamicPredecessorsListPromise
+[2017-07-27T14:45:39.683Z] { unableToLockRow: null,
+  message: 'OK',
+  isError: false,
+  fullMessage: 'OK',
+  expcetionType: null,
+  errorLevel: null,
+  developerMessage: null,
+  lockingUserName: 'Stephen Klee',
+  lockingUserId: '0056A000000yCTbQAM',
+  isLocked: true,
+  canUnlockGantt: false }
+[2017-07-27T14:46:07.361Z] { unableToLockRow: null,
+  message: 'OK',
+  isError: false,
+  fullMessage: 'OK',
+  expcetionType: null,
+  errorLevel: null,
+  developerMessage: null,
+  dynamicPredecessor: [] }
+[2017-07-27T14:46:07.388Z] aaaa [object Object]
+[2017-07-27T14:46:07.388Z] bbbb [object Object]
+[2017-07-27T14:46:07.388Z] cccc [object Object]
+[2017-07-27T14:46:17.504Z] dddd [object Object]
+[2017-07-27T14:46:17.504Z] _onAppLoaded()
+[2017-07-27T14:46:17.532Z] { unableToLockRow: null,
+  message: 'OK',
+  isError: false,
+  fullMessage: 'OK',
+  expcetionType: null,
+  errorLevel: null,
+  developerMessage: null,
+  ganttVersions: [ { versionType: 'online', Id: 'online', Description: 'Online' } ] }
+[2017-07-27T14:46:17.539Z] out.html saved
+
