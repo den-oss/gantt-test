@@ -1,0 +1,63 @@
+.CustomerApproval:not(.sch-rollup-task) {
+    border           : 2px solid #ddd;
+    background-color : #222;
+}
+
+.projectIcon:before {
+    content : "\f058";
+}
+
+.x-tree-icon-leaf:before {
+    content   : "\f111";
+    font-size : 0.6em;
+    position  : relative;
+    top       : -3px;
+}
+
+.important .x-tree-icon-leaf:before {
+    color : red;
+}
+
+
+
+.sch-gantt-project-line-end.sch-gantt-project-line-Delivery .sch-gantt-project-line-text {
+    top : 44px;
+}
+
+.Important .sch-gantt-progress-bar {
+    background-image  : url(../../../../resources/images/pattern.png);
+    background-repeat : repeat;
+}
+
+.sch-gantt-task {
+    top    : 10%;
+    height : 80%;
+}
+
+.sch-gantt-task-segment .sch-gantt-progress-bar-label {
+    display : none;
+}
+
+.sch-segment-in-progress .sch-gantt-progress-bar-label {
+    display : inline;
+}
+
+.sch-gantt-parent-task .sch-gantt-labelct,
+.sch-gantt-task .sch-gantt-labelct {
+    top : 2px
+}
+
+.sch-gantt-progress-bar {
+    line-height : 25px;
+}
+
+div.sch-gantt-parenttask-bar .sch-gantt-progress-bar {
+    background-color: #BEDC5E;
+}
+
+
+.sch-gantt-progress-bar span {
+    margin-right : 2px;
+
+}
+
