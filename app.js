@@ -11,21 +11,21 @@ const os = require("os");
 
 //-------------
 
+var router = express.Router();
+var app = express();
+
 var port = (process.env.PORT ? process.env.PORT : 3000);
-var baseUrl = 'http://' + os.hostname() + ':' + port;
+var baseUrl = (req) => 'http://' + req.get('host');
 var appQuery = '?projectId=a4G6A000000L0bs&showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E';
-var appUrl = baseUrl + '/build/' + appQuery;
+var appUrl = (req) => baseUrl(req) + '/build/' + appQuery;
 var fileUrl = 'file://' + __dirname + '/app/build/production/CGA/index.html' + appQuery;
 var filePath = './app/build/production/CGA/index.html';
 var cachePath = './out/out.html';
-var runUrl = baseUrl + '/run';
-var runCachedUrl = baseUrl + '/out/out.html';
+var runUrl = (req) => baseUrl(req) + '/run';
+var runCachedUrl = (req) => baseUrl(req) + '/out/out.html';
 var runAppFromFileProtocol = true;
 
 //-------------
-
-var router = express.Router();
-var app = express();
 
 app.use('/build', express.static('app/build/production/CGA'));
 
@@ -36,10 +36,10 @@ app.use('/out', express.static('out'));
 app.get('/', function (req, res) {
     let out = "";
     out += "<ul>";
-    out += "<li><a href='"+appUrl+"'>run in browser</a></li>";
+    out += "<li><a href='"+appUrl(req)+"'>run in browser</a></li>";
     out += "<li>note: you must run chrome like that: <pre>"+'/opt/google/chrome/chrome --disable-web-security --user-data-dir="/var/tmp/Chrome dev session"'+"</pre></li>";
-    out += "<li><a href='"+runUrl+"'>run on server (live)</a></li>";
-    out += "<li><a href='"+runCachedUrl+"'>run on server (cached)</a></li>";
+    out += "<li><a href='"+runUrl(req)+"'>run on server (live)</a></li>";
+    out += "<li><a href='"+runCachedUrl(req)+"'>run on server (cached)</a></li>";
     out += "</ul>";
     res.send(out);
 });
@@ -58,7 +58,7 @@ app.get('/run', function (req, res) {
 });
 
 app.listen(port, function () {
-  console.log('App listening on ' + baseUrl);
+    console.log('App listening on ' + port);
 });
 
 //-------------
@@ -79,8 +79,8 @@ function runAppOnServer(res) {
             cookieJar: cookieJar,
         };
 
-        let url = runAppFromFileProtocol ? filePath + appQuery : appUrl;
-        let prom = runAppFromFileProtocol ? JSDOM.fromFile(filePath, options) : JSDOM.fromURL(appUrl, options);
+        let url = runAppFromFileProtocol ? filePath + appQuery : appUrl(req);
+        let prom = runAppFromFileProtocol ? JSDOM.fromFile(filePath, options) : JSDOM.fromURL(appUrl(req), options);
         prom.then(dom => {
             var window = dom.window;
             if (runAppFromFileProtocol)
