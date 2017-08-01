@@ -1,5 +1,5 @@
 $app-name:  dynamic( 'CGA' );
-$image-search-path: '/var/www/html/plots/build/development/CGA/classic/resources';
+$image-search-path: '/home/denis/projs/gantt-test/app/build/development/CGA/classic/resources';
 $theme-name:  dynamic( 'theme-triton' );
 $include-ext-abstractcomponent: dynamic(true);;
 $include-ext-abstractcontainer: dynamic(true);;

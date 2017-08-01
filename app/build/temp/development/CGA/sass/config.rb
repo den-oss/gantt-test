@@ -1,1 +1,1 @@
-cache_path = '/var/www/html/plots/build/.sass-cache'
+cache_path = '/home/denis/projs/gantt-test/app/build/.sass-cache'
