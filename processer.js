@@ -10,6 +10,7 @@ const os = require("os");
 const EventEmitter = require('events');
 const EmfProcess = require('./EmfProcess');
 const assert = require('assert');
+const { Script } = require("vm");
 
 
 class GntProcesser extends EventEmitter {
@@ -112,7 +113,9 @@ class GntProcesser extends EventEmitter {
 		if (!this.domInst)
 			throw new Error("No DOM instance!");
 	    return new Promise((resolve, reject) => {
-	        //.............. todo
+            var saveScript = new Scrpit(`Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges()`);
+            this.domInst.dom.runVMScript(saveScript);
+            resolve({});
 	    });
 	}
 
