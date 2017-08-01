@@ -1,0 +1,52 @@
+<script src="socket.io-client/dist/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+  var domInst = null;
+  var socket = io.connect(window.location.origin);
+  socket.on('connect', function () {
+    console.info('socket connected');
+  });
+
+  socket.on('disconnect', function () {
+    console.warn('socket disconnected');
+  });
+
+  socket.on('app_ping', function () {
+    console.log('ping');
+  });
+
+  socket.on('app_error', function (data) {
+    console.error('app_error', data);
+  });
+
+  socket.on('app_run_done', function (data) {
+    domInst = data;
+    console.log('app_run_done', data);
+    $('#btnDoSave').attr('disabled', null);
+  });
+
+  socket.on('app_console', function (data) {
+  	var {type, args} = data;
+    console[type]('app_console', ...args);
+  });
+
+  socket.on('app_save_done', function (data) {
+    console.log('app_save_done', data);
+  });
+
+  function doRun () {
+  	console.log('emiting app run');
+    socket.emit('app_run', { });
+  }
+
+  function doSave () {
+  	console.log('emiting app save');
+    socket.emit('app_save', { id: domInst.id });
+  }
+</script>
+
+
+<html>
+	<button id='btnDoRun' onclick="doRun()">Run</button>
+	<button disabled id='btnDoSave' onclick="doSave()">Save</button>
+</html>
