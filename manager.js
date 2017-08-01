@@ -9,16 +9,16 @@ class GntManager {
 		this.workersClientIdToId = {};
 	}
 
-	createWorker (opts) {
+	createWorker (opts, clientId = null, cns = null) {
 		this.workersCnt++;
 		let id = this.workersCnt;
 		let worker = child_process.fork(__dirname + '/worker.js');
-		let clientId = opts.clientId || null;
 		let w = new EmfProcess({
 		    process: worker,
 		    id: id,
 		    clientId: clientId,
 		});
+        w.cns = cns;
 		w.on('error', (err) => {
 		  console.error('[Worker#'+w.id+']', err);
 		});
@@ -40,10 +40,10 @@ class GntManager {
         });
 	}
 
-	getOrCreateWorkerForClient (clientId, createOpts) {
+	getOrCreateWorkerForClient (clientId, createOpts, cns = null) {
 		let w = this.getWorkerForClient(clientId);
 		if (!w)
-			return this.createWorker(createOpts);
+			return this.createWorker(createOpts, clientId, cns);
 		else
 			return Promise.resolve(w);
 	}
@@ -54,7 +54,8 @@ class GntManager {
 	}
 
 	killWorker (w) {
-		w.propcess._emit('kill');
+		w.emit('kill');
+        this.workers[w.id] = null;
 	}
 
 	workerCmd(w, cmd, opts) {
@@ -62,6 +63,7 @@ class GntManager {
 			w.emit(cmd, opts);
 			w.once('error', err => {
 				reject(err);
+                this.killWorker(w);
 			});
 			w.once('exit', (code, signal) => {
 				reject(new Error("Exited with code " + code));
@@ -69,8 +71,9 @@ class GntManager {
 			w.once('answ_'+cmd, data => {
 				resolve(data);
 			});
-			w.on('console', args => {
-				//todo,.,,,
+			w.on('console', ({type, args}) => {
+                if (w.cns)
+				    w.cns[type](...args);
 			});
 		});
 	}
