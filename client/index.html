@@ -31,6 +31,7 @@
 
   socket.on('app_save_done', function (data) {
     console.log('app_save_done', data);
+    alert('Saved');
   });
 
   function doRun () {
@@ -40,7 +41,7 @@
 
   function doSave (inVM = true) {
   	console.log('emiting app save');
-    socket.emit('app_save', { inVM: inVM });
+    socket.emit('app_save', { opts: {inVM: inVM} });
   }
 </script>
 
