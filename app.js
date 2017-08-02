@@ -76,9 +76,13 @@ io.on('connection', function (socket) {
     }
     let createOpts = Object.assign({}, data.opts || {});
     let cmdOpts = {};
+    let w = null;
     let wProm = gm.getOrCreateWorkerForClient(socket.id, createOpts, consoleListener)
     wProm
-        .then(w => gm.workerCmd(w, 'run', cmdOpts))
+        .then(_w => {
+            w = _w;
+            return gm.workerCmd(w, 'run', cmdOpts);
+        })
         .then(info => {
             clearInterval(keepConnTimer);
             keepConnTimer = null;
@@ -107,12 +111,11 @@ io.on('connection', function (socket) {
     }, 1000*5);
     let w = gm.getWorkerForClient(socket.id);
     gm.workerCmd(w, 'save', cmdOpts)
-        then(info => {
+        .then(info => {
             clearInterval(keepConnTimer);
             keepConnTimer = null;
             socket.emit('app_save_done', {
                 info,
-                id: w.id,
             });
 
             console.log('['+socket.id+']', '------ save', info);

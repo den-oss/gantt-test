@@ -25,7 +25,7 @@ class GntProcesser extends EventEmitter {
 			cachePath: './out/out.html',
 			runAppFromFileProtocol: true,
 			appQuery: '?projectId=a4G6A000000L0bs&showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E',
-			stalledTimerSesc: 1000*60*5, //5min
+			stalledTimerSesc: 1000*60*15, //15min
 		};
 		this.opts = Object.assign({}, defOpts, opts);
 		this.opts.appUrl = this.opts.baseUrl + '/build/' + this.opts.appQuery;
