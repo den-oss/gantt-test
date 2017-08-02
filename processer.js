@@ -10,6 +10,7 @@ const os = require("os");
 const EventEmitter = require('events');
 const EmfProcess = require('./EmfProcess');
 const assert = require('assert');
+const { Script } = require("vm");
 
 
 class GntProcesser extends EventEmitter {
@@ -24,7 +25,7 @@ class GntProcesser extends EventEmitter {
 			cachePath: './out/out.html',
 			runAppFromFileProtocol: true,
 			appQuery: '?projectId=a4G6A000000L0bs&showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E',
-			stalledTimerSesc: 60*5, //5min
+			stalledTimerSesc: 1000*60*5, //5min
 		};
 		this.opts = Object.assign({}, defOpts, opts);
 		this.opts.appUrl = this.opts.baseUrl + '/build/' + this.opts.appQuery;
@@ -80,7 +81,7 @@ class GntProcesser extends EventEmitter {
 		this.restartStalledTimer();
 		this.process.emit('console', {
 			type,
-			...args
+			args
 		});
 	}
 
@@ -112,7 +113,9 @@ class GntProcesser extends EventEmitter {
 		if (!this.domInst)
 			throw new Error("No DOM instance!");
 	    return new Promise((resolve, reject) => {
-	        //.............. todo
+            var saveScript = new Scrpit(`Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges()`);
+            this.domInst.dom.runVMScript(saveScript);
+            resolve({});
 	    });
 	}
 
@@ -195,7 +198,7 @@ class GntProcesser extends EventEmitter {
 	                    resolve(domInst);
 	                }, 1000*5);
 	            };
-	            this.on('stalled', (info) => {
+	            this.once('stalled', (info) => {
 	            	reject({
 	            		message: "Stalled", 
 	            		info: info

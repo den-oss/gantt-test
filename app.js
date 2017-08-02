@@ -29,15 +29,15 @@ app.use('/client', express.static('client'));
 
 app.get('/', function (req, res) {
     baseUrl = baseUrlFn(req);
-    var clientUrl = (req) => baseUrlFn(req) + '/client';
-    var logsUrl = (req) => baseUrlFn(req) + '/logs/';
+    var clientUrl = baseUrlFn(req) + '/client';
+    var logsUrl = baseUrlFn(req) + '/logs/';
     var appUrl = baseUrlFn(req) + '/build/' + appQuery;
 
     let out = "";
     out += "<ul>";
-    out += "<li><a href='"+appUrl(req)+"'>run in browser</a></li>";
+    out += "<li><a href='"+appUrl+"'>run in browser</a></li>";
     out += "<li>note: you must run chrome like that: <pre>"+'/opt/google/chrome/chrome --disable-web-security --user-data-dir="/var/tmp/Chrome dev session"'+"</pre></li>";
-    out += "<li><a href='"+clientUrl(req)+"'>NEW client</a></li>";
+    out += "<li><a href='"+clientUrl+"'>NEW client</a></li>";
     out += "</ul>";
     res.send(out);
 });
@@ -74,12 +74,9 @@ io.on('connection', function (socket) {
     for (let type of ['log', 'info', 'error', 'warn', 'dir', 'debug', 'trace']) {
         consoleListener[type] = (...args) => onConsole(type, ...args);
     }
-    let createOpts = Object.assign({}, data.opts || {}, {
-        consoleListener,
-        clientId: socket.id
-    });
+    let createOpts = Object.assign({}, data.opts || {});
     let cmdOpts = {};
-    let wProm = gm.getOrCreateWorkerForClient(socket.id, createOpts)
+    let wProm = gm.getOrCreateWorkerForClient(socket.id, createOpts, consoleListener)
     wProm
         .then(w => gm.workerCmd(w, 'run', cmdOpts))
         .then(info => {
