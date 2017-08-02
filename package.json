@@ -4,6 +4,7 @@
   "devDependencies": {},
   "dependencies": {
     "canvas-prebuilt": "^1.6.5-prerelease.1",
+    "clone": "^2.1.1",
     "dom-storage": "^2.0.2",
     "express": "^4.15.3",
     "fs": "0.0.1-security",

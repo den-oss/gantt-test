@@ -23,13 +23,17 @@
         };
     </script>
 
-                                           <script type="text/javascript">
-                                               var sessionId = '00D6A0000002RdY!AR4AQGTcUp3D8bHb71BYWOpuXRSUtuQappm_fGS6hvTECKDOQnOXWCVYkZY8TmV2bJoT8JNTdXv1zcBCycCKzdV5rzH_X5Ir';
-                                               var client = new forcetk.Client();
-                                               client.setSessionToken(sessionId);
-                                               client.instanceUrl = "https://na50.salesforce.com";
-                                               client.proxyUrl = null;
-                                           </script>
+ <script type="text/javascript">
+     //var sessionId = '00D6A0000002RdY!AR4AQGTcUp3D8bHb71BYWOpuXRSUtuQappm_fGS6hvTECKDOQnOXWCVYkZY8TmV2bJoT8JNTdXv1zcBCycCKzdV5rzH_X5Ir';
+     var queryDict = {}
+     location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
+     var sessionId = queryDict.sessionId;
+     console.log('sessionId', sessionId);
+     var client = new forcetk.Client();
+     client.setSessionToken(sessionId);
+     client.instanceUrl = "https://na50.salesforce.com";
+     client.proxyUrl = null;
+ </script>
 
 
 

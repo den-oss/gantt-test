@@ -14,8 +14,10 @@ var server = http.Server(app);
 var io = socketio(server);
 var gm = new GntManager();
 
+var sid = '00D6A0000002RdY!AR4AQGTcUp3D8bHb71BYWOpuXRSUtuQappm_fGS6hvTECKDOQnOXWCVYkZY8TmV2bJoT8JNTdXv1zcBCycCKzdV5rzH_X5Ir';
 var port = (process.env.PORT ? process.env.PORT : 3000);
-var appQuery = '?projectId=a4G6A000000L0bs&showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E';
+var appQuery = '?projectId=a4G6A000000L0bs&showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E'
+ + "&sid=" + sid;
 var baseUrlFn = (req) => 'http://' + req.get('host');
 var baseUrl = null;
 
@@ -51,7 +53,14 @@ server.listen(port, function () {
 io.on('connection', function (socket) {
   console.log('client connected', socket.id);
   
+  var keepConnTimer = setInterval(() => {
+    socket.emit('app_ping');
+  }, 1000*5);
+
   socket.on('disconnect', function () {
+    clearInterval(keepConnTimer);
+    keepConnTimer = null;
+
     let w = gm.getWorkerForClient(socket.id);
     if (w)
         gm.killWorker(w);
@@ -60,9 +69,6 @@ io.on('connection', function (socket) {
 
   socket.on('app_run', function (data) {
     console.log('['+socket.id+']', 'app_run', data);
-    var keepConnTimer = setInterval(() => {
-        socket.emit('app_ping');
-    }, 1000*5);
     var onConsole = (type, ...args) => {
         console[type]('['+socket.id+']', ...args);
         socket.emit('app_console', {
@@ -75,7 +81,7 @@ io.on('connection', function (socket) {
         consoleListener[type] = (...args) => onConsole(type, ...args);
     }
     let createOpts = Object.assign({}, data.opts || {});
-    let cmdOpts = {};
+    let cmdOpts = {sid: data.sid};
     let w = null;
     let wProm = gm.getOrCreateWorkerForClient(socket.id, createOpts, consoleListener)
     wProm
@@ -84,8 +90,6 @@ io.on('connection', function (socket) {
             return gm.workerCmd(w, 'run', cmdOpts);
         })
         .then(info => {
-            clearInterval(keepConnTimer);
-            keepConnTimer = null;
             socket.emit('app_run_done', {
                 info,
                 wid: w.id,
@@ -94,9 +98,6 @@ io.on('connection', function (socket) {
             console.log('['+socket.id+']', 'workerCmd run result', info);
         })
         .catch(err => {
-            clearInterval(keepConnTimer);
-            keepConnTimer = null;
-
             socket.emit('app_error', err);
             console.error('['+socket.id+']', 'workerCmd error', err);
         });
@@ -107,9 +108,6 @@ io.on('connection', function (socket) {
     let wid = data.wid;
     let cmdOpts = Object.assign({}, data.opts || {});
     //cmdOpts.killOnError = true
-    var keepConnTimer = setInterval(() => {
-        socket.emit('app_ping');
-    }, 1000*5);
     Promise.resolve(gm.getWorkerForClient(socket.id))
     .then(w => {
         if (!w)
@@ -117,18 +115,12 @@ io.on('connection', function (socket) {
         return gm.workerCmd(w, 'save', cmdOpts);
     })
     .then(info => {
-        clearInterval(keepConnTimer);
-        keepConnTimer = null;
-
         socket.emit('app_save_done', {
             info,
         });
         console.log('['+socket.id+']', 'workerCmd save result', info);
     })
     .catch(err => {
-        clearInterval(keepConnTimer);
-        keepConnTimer = null;
-
         socket.emit('app_error', err);
         console.error('['+socket.id+']', 'workerCmd error', err);
     });

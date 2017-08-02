@@ -28,8 +28,8 @@ class GntProcesser extends EventEmitter {
 			stalledTimerSesc: 1000*60*15, //15min
 		};
 		this.opts = Object.assign({}, defOpts, opts);
-		this.opts.appUrl = this.opts.baseUrl + '/build/' + this.opts.appQuery;
-		this.opts.fileUrl = 'file://' + __dirname + '/app/build/production/CGA/index.html' + this.opts.appQuery;
+		//this.opts.appUrl = this.opts.baseUrl + '/build/' + this.opts.appQuery;
+		//this.opts.fileUrl = 'file://' + __dirname + '/app/build/production/CGA/index.html' + this.opts.appQuery;
 
 		this.domInst = null;
 
@@ -53,8 +53,8 @@ class GntProcesser extends EventEmitter {
 		});
 	}
 
-	mw_run () {
-		this.run()
+	mw_run (opts) {
+		this.run(opts)
 		.then(domInst => {
 			this.process.emit("answ_run", {
 				info: domInst.info,
@@ -109,12 +109,12 @@ class GntProcesser extends EventEmitter {
 		this.runStalledTimer();
 	}
 
-	save (opts) {
+	save (cmdOpts) {
 	    return new Promise((resolve, reject) => {
 			if (!this.domInst)
 				throw new Error("No DOM instance!");
 	    	try {
-	    		if (opts.inVM === undefined || !opts.inVM) {
+	    		if (cmdOpts.inVM === undefined || !cmdOpts.inVM) {
 		            var saveScript = new Scrpit(`Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges();`);
 		            this.domInst.dom.runVMScript(saveScript);
 		            resolve({saved: 1});
@@ -152,7 +152,7 @@ class GntProcesser extends EventEmitter {
 	    });
 	}
 
-	run () {
+	run (cmdOpts) {
 		this.destroy();
 		let opts = this.opts;
         this.startDate = new Date();
@@ -170,18 +170,20 @@ class GntProcesser extends EventEmitter {
             virtualConsole: virtualConsole,
             cookieJar: cookieJar,
         };
-
-        let url = opts.runAppFromFileProtocol ? opts.filePath + opts.appQuery : opts.appUrl;
+        var q = this.opts.appQuery + '&sessionId=' + cmdOpts.sid;
+		var appUrl = this.opts.baseUrl + '/build/' + q;
+        let url = opts.runAppFromFileProtocol ? opts.filePath + q : appUrl;
         this.restartStalledTimer();
         let prom = opts.runAppFromFileProtocol ? 
             JSDOM.fromFile(opts.filePath, jsdomOptions) : 
-            JSDOM.fromURL(opts.appUrl, jsdomOptions);
+            JSDOM.fromURL(appUrl, jsdomOptions);
         return prom.then(dom => {
         	this.restartStalledTimer();
 	    	return new Promise((resolve, reject) => {
 	            var window = dom.window;
+	            //window.sessionId = cmdOpts.sid;
 	            if (opts.runAppFromFileProtocol)
-	                window.location.search = opts.appQuery;
+	                window.location.search = q;
 	            if (opts.consoleListener)
 	                opts.consoleListener.log('url loaded', url);
 	            window.localStorage = new Storage(null, { strict: false, ws: '  ' });
