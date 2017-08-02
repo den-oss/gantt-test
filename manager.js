@@ -20,7 +20,7 @@ class GntManager {
 		});
         w.cns = cns;
 		w.on('error', (err) => {
-		  console.error('[Worker#'+w.id+']', err);
+		  console.error('[Worker#'+w.id+'] Error:', err);
 		});
 		w.once('exit', (code, signal) => {
 		  console.log('[Worker#'+w.id+']' + ' Exited with code ' + code);
@@ -62,8 +62,11 @@ class GntManager {
 		return new Promise((resolve, reject) => {
 			w.emit(cmd, opts);
 			w.once('error', err => {
+				console.log('workerCmd error', err);
 				reject(err);
-                this.killWorker(w);
+                if (opts.killOnError) {
+                	this.killWorker(w);
+            	}
 			});
 			w.once('exit', (code, signal) => {
 				reject(new Error("Exited with code " + code));

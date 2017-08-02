@@ -113,9 +113,13 @@ class GntProcesser extends EventEmitter {
 		if (!this.domInst)
 			throw new Error("No DOM instance!");
 	    return new Promise((resolve, reject) => {
-            var saveScript = new Scrpit(`Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges()`);
-            this.domInst.dom.runVMScript(saveScript);
-            resolve({});
+	    	try {
+	            var saveScript = new Scrpit(`Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges()`);
+	            this.domInst.dom.runVMScript(saveScript);
+	            resolve({saved: 1});
+        	} catch (err) {
+        		reject(err);
+        	}
 	    });
 	}
 

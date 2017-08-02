@@ -91,14 +91,14 @@ io.on('connection', function (socket) {
                 wid: w.id,
             });
 
-            console.log('['+socket.id+']', '------ run', info);
+            console.log('['+socket.id+']', 'workerCmd run result', info);
         })
         .catch(err => {
             clearInterval(keepConnTimer);
             keepConnTimer = null;
-            socket.emit('app_error', err);
 
-            console.error('['+socket.id+']', err);
+            socket.emit('app_error', err);
+            console.error('['+socket.id+']', 'workerCmd error', err);
         });
   });
 
@@ -106,27 +106,32 @@ io.on('connection', function (socket) {
     console.log('['+socket.id+']', 'app_save', data);
     let wid = data.wid;
     let cmdOpts = Object.assign({}, data.opts || {});
+    //cmdOpts.killOnError = true
     var keepConnTimer = setInterval(() => {
         socket.emit('app_ping');
     }, 1000*5);
-    let w = gm.getWorkerForClient(socket.id);
-    gm.workerCmd(w, 'save', cmdOpts)
-        .then(info => {
-            clearInterval(keepConnTimer);
-            keepConnTimer = null;
-            socket.emit('app_save_done', {
-                info,
-            });
+    Promise.resolve(gm.getWorkerForClient(socket.id))
+    .then(w => {
+        if (!w)
+            throw new Error("Can't get worker for client id = " + socket.id);
+        return gm.workerCmd(w, 'save', cmdOpts);
+    })
+    .then(info => {
+        clearInterval(keepConnTimer);
+        keepConnTimer = null;
 
-            console.log('['+socket.id+']', '------ save', info);
-        })
-        .catch(err => {
-            clearInterval(keepConnTimer);
-            keepConnTimer = null;
-            socket.emit('app_error', err);
-
-            console.error('['+socket.id+']', err);
+        socket.emit('app_save_done', {
+            info,
         });
+        console.log('['+socket.id+']', 'workerCmd save result', info);
+    })
+    .catch(err => {
+        clearInterval(keepConnTimer);
+        keepConnTimer = null;
+
+        socket.emit('app_error', err);
+        console.error('['+socket.id+']', 'workerCmd error', err);
+    });
   });
 
 });

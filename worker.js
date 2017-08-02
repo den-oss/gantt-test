@@ -27,11 +27,11 @@ emfProcess.once('create', (data) => {
 
 
 process.on('unhandledRejection', function (err) {
-  console.error('[Worker#'+(prc ? prc.workerId : '?')+']', err);
+  console.error('[Worker#'+(prc ? prc.workerId : '?')+'] unhandledRejection', err);
   emfProcess._emit('kill');
 });
 process.on('uncaughtException', function (err) {
-  console.error('[Worker#'+(prc ? prc.workerId : '?')+']', err);
+  console.error('[Worker#'+(prc ? prc.workerId : '?')+'] uncaughtException', err);
   emfProcess._emit('kill');
 });
 
