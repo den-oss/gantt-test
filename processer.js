@@ -65,8 +65,8 @@ class GntProcesser extends EventEmitter {
 		});
 	}
 
-	mw_save () {
-		this.save()
+	mw_save (opts) {
+		this.save(opts)
 		.then(domInst => {
 			this.process.emit("answ_save", {
 				info: domInst.info,
@@ -109,14 +109,18 @@ class GntProcesser extends EventEmitter {
 		this.runStalledTimer();
 	}
 
-	save () {
-		if (!this.domInst)
-			throw new Error("No DOM instance!");
+	save (opts) {
 	    return new Promise((resolve, reject) => {
+			if (!this.domInst)
+				throw new Error("No DOM instance!");
 	    	try {
-	            var saveScript = new Scrpit(`Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges()`);
-	            this.domInst.dom.runVMScript(saveScript);
-	            resolve({saved: 1});
+	    		if (opts.inVM === undefined || !opts.inVM) {
+		            var saveScript = new Scrpit(`Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges();`);
+		            this.domInst.dom.runVMScript(saveScript);
+		            resolve({saved: 1});
+	        	} else {
+	        		Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges();
+	        	}
         	} catch (err) {
         		reject(err);
         	}
@@ -128,10 +132,10 @@ class GntProcesser extends EventEmitter {
 	}
 
 	serializeHtml () {
-		if (!this.domInst)
-			throw new Error("No DOM instance!");
 		let opts = this.opts;
 	    return new Promise((resolve, reject) => {
+			if (!this.domInst)
+				throw new Error("No DOM instance!");
 			var html = this.domInst.dom.serialize();
             html += "<hr/>generated in " + elapsedTime + "sec";
 			this.domInst.html = html;

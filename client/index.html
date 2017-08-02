@@ -21,6 +21,7 @@
   socket.on('app_run_done', function (data) {
     console.log('app_run_done', data);
     $('#btnDoSave').attr('disabled', null);
+    $('#btnDoSave2').attr('disabled', null);
   });
 
   socket.on('app_console', function (data) {
@@ -37,14 +38,15 @@
     socket.emit('app_run', { });
   }
 
-  function doSave () {
+  function doSave (inVM = true) {
   	console.log('emiting app save');
-    socket.emit('app_save', {  });
+    socket.emit('app_save', { inVM: inVM });
   }
 </script>
 
 
 <html>
 	<button id='btnDoRun' onclick="doRun()">Run</button>
-	<button disabled id='btnDoSave' onclick="doSave()">Save</button>
+	<button disabled id='btnDoSave' onclick="doSave(true)">Save</button>
+  <button disabled id='btnDoSave2' onclick="doSave(false)">Save2</button>
 </html>
