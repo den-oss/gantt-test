@@ -114,12 +114,20 @@ class GntProcesser extends EventEmitter {
 			if (!this.domInst)
 				throw new Error("No DOM instance!");
 	    	try {
-	    		if (cmdOpts.inVM === undefined || !cmdOpts.inVM) {
-		            var saveScript = new Scrpit(`Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges();`);
+	    		if (opts.inVM === undefined || opts.inVM) {
+                    console.log('save...a1');
+		            var saveScript = new Script(`Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges();`);
+                    console.log('save...a2');
 		            this.domInst.dom.runVMScript(saveScript);
+                    console.log('save...a3');
 		            resolve({saved: 1});
 	        	} else {
+                    console.log('save...b1');
+                    let window = this.domInst.dom.window;
+                    let Ext = window.Ext;
 	        		Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges();
+                    console.log('save...b2');
+                    resolve({saved: 1});
 	        	}
         	} catch (err) {
         		reject(err);
