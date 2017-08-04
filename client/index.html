@@ -37,7 +37,8 @@
   function doRun () {
   	console.log('emiting app run');
     var sid = $('#sid').val();
-    socket.emit('app_run', { sid: sid });
+    var pid = $('#pid').val();
+    socket.emit('app_run', { sid: sid, pid: pid });
   }
 
   function doSave (inVM = true) {
@@ -48,7 +49,9 @@
 
 
 <html>
-  <input type="text" size="150" id="sid" value="00D6A0000002RdY!AR4AQGTcUp3D8bHb71BYWOpuXRSUtuQappm_fGS6hvTECKDOQnOXWCVYkZY8TmV2bJoT8JNTdXv1zcBCycCKzdV5rzH_X5Ir"></input>
+  project: <input type="text" size="50" id="pid" value="a4G6A000000L0bsUAC"></input>
+  <br>
+  session: <input type="text" size="150" id="sid" value="00D6A0000002RdY!AR4AQGTcUp3D8bHb71BYWOpuXRSUtuQappm_fGS6hvTECKDOQnOXWCVYkZY8TmV2bJoT8JNTdXv1zcBCycCKzdV5rzH_X5Ir"></input>
   <br>
 	<button id='btnDoRun' onclick="doRun()">Run</button>
 	<button disabled id='btnDoSave' onclick="doSave(true)">Save</button>

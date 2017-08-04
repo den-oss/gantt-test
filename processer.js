@@ -24,7 +24,7 @@ class GntProcesser extends EventEmitter {
 			filePath: './app/build/production/CGA/index.html',
 			cachePath: './out/out.html',
 			runAppFromFileProtocol: true,
-			appQuery: '?projectId=a4G6A000000L0bs&showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E',
+			appQuery: '?showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E',
 			stalledTimerSesc: 1000*60*15, //15min
 		};
 		this.opts = Object.assign({}, defOpts, opts);
@@ -178,8 +178,9 @@ class GntProcesser extends EventEmitter {
             virtualConsole: virtualConsole,
             cookieJar: cookieJar,
         };
-        var q = this.opts.appQuery + '&sessionId=' + cmdOpts.sid;
-		var appUrl = this.opts.baseUrl + '/build/' + q;
+        var q = this.opts.appQuery + '&projectId=' + cmdOpts.pid + '&sessionId=' + cmdOpts.sid;
+        console.log('q = ', q);
+        var appUrl = this.opts.baseUrl + '/build/' + q;
         let url = opts.runAppFromFileProtocol ? opts.filePath + q : appUrl;
         this.restartStalledTimer();
         let prom = opts.runAppFromFileProtocol ? 

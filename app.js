@@ -81,7 +81,7 @@ io.on('connection', function (socket) {
         consoleListener[type] = (...args) => onConsole(type, ...args);
     }
     let createOpts = Object.assign({}, data.opts || {});
-    let cmdOpts = {sid: data.sid};
+    let cmdOpts = {sid: data.sid, pid: data.pid};
     let w = null;
     let wProm = gm.getOrCreateWorkerForClient(socket.id, createOpts, consoleListener)
     wProm
