@@ -184,6 +184,7 @@ if (forcetk.Client === undefined) {
                 }
                 xhr.setRequestHeader(that.authzHeader, "Bearer " + that.sessionId);
                 xhr.setRequestHeader('X-User-Agent', 'salesforce-toolkit-rest-javascript/' + that.apiVersion);
+                xhr.setRequestHeader('Sforce-Call-Options', 'defaultNamespace=CC_REID');
             }
         });
     }

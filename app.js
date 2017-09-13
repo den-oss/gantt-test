@@ -14,10 +14,11 @@ var server = http.Server(app);
 var io = socketio(server);
 var gm = new GntManager();
 
-var sid = '00D6A0000002RdY!AR4AQGTcUp3D8bHb71BYWOpuXRSUtuQappm_fGS6hvTECKDOQnOXWCVYkZY8TmV2bJoT8JNTdXv1zcBCycCKzdV5rzH_X5Ir';
+var sid = '00D6A0000002RdY!AR4AQFxC.CnJa7uIHDlExZNDMo_zA2tXOvEWM2Q1H.4XnUi2QJxb08KRk2C.F0XoUDf_36WEZV6zFjeZNsHHFUkVCNIbZr.6';
 var port = (process.env.PORT ? process.env.PORT : 3000);
-var appQuery = '?projectId=a4G6A000000L0bs&showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E'
- + "&sid=" + sid;
+var appQuery = '?projectId=a4G6A000000L4QFUA0&showHeader=false&sidebar=false&groupingType=ParentStageType%E2%80%8E'
+ //+ "&sid=" + sid
+;
 var baseUrlFn = (req) => 'http://' + req.get('host');
 var baseUrl = null;
 

@@ -83,6 +83,40 @@ class GntProcesser extends EventEmitter {
 			type,
 			args
 		});
+
+		if (args.length && this.isEndMessage(args[0])) {
+			this.onAppLoaded(args[0]);
+		}
+	}
+
+	isEndMessage(msg) {
+		return typeof msg == 'object' 
+			&& msg.fullMessage !== undefined
+			&& msg.message !== undefined
+			&& msg.errorLevel !== undefined
+		;
+	}
+
+	onInitDataLoad () {
+    	this.restartStalledTimer();
+        if (opts.consoleListener)
+            opts.consoleListener.log('_onInitDataLoad');
+	}
+
+	onAppLoaded (msg) {
+    	this.stopStalledTimer(); //finish!
+        if (opts.consoleListener)
+            opts.consoleListener.log('_onAppLoaded', msg);
+        setTimeout(() => { //wait a bit more for sure..
+            this.endDate = new Date();
+            var elapsedTime = (this.endDate - this.startDate) / 1000;
+            if (opts.consoleListener)
+                opts.consoleListener.log('app loaded in ' + elapsedTime + ' sec');
+            info.elapsedTime = elapsedTime;
+            var domInst = {dom, info};
+            this.domInst = domInst;
+            resolve(domInst);
+        }, 1000*5);
 	}
 
 	onStalled () {
@@ -139,6 +173,7 @@ class GntProcesser extends EventEmitter {
 		this.domInst = null;
 	}
 
+	/*
 	serializeHtml () {
 		let opts = this.opts;
 	    return new Promise((resolve, reject) => {
@@ -159,6 +194,7 @@ class GntProcesser extends EventEmitter {
             });
 	    });
 	}
+	*/
 
 	run (cmdOpts) {
 		this.destroy();
@@ -197,26 +233,12 @@ class GntProcesser extends EventEmitter {
 	                opts.consoleListener.log('url loaded', url);
 	            window.localStorage = new Storage(null, { strict: false, ws: '  ' });
 	            window.sessionStorage = new Storage(null, { strict: true });
-	            window._onInitDataLoad = () => {
-	            	this.restartStalledTimer();
-	                if (opts.consoleListener)
-	                    opts.consoleListener.log('_onInitDataLoad');
-	            };
-	            window._onAppLoaded = () => {
-	            	this.stopStalledTimer(); //finish!
-	                if (opts.consoleListener)
-	                    opts.consoleListener.log('_onAppLoaded');
-	                setTimeout(() => { //wait a bit more for sure..
-	                    this.endDate = new Date();
-	                    var elapsedTime = (this.endDate - this.startDate) / 1000;
-	                    if (opts.consoleListener)
-	                        opts.consoleListener.log('app loaded in ' + elapsedTime + ' sec');
-	                    info.elapsedTime = elapsedTime;
-	                    var domInst = {dom, info};
-	                    this.domInst = domInst;
-	                    resolve(domInst);
-	                }, 1000*5);
-	            };
+	            // window._onInitDataLoad = () => {
+	            // 	this.onInitDataLoad();
+	            // };
+	            // window._onAppLoaded = () => {
+	            // 	this.onAppLoaded();
+	            // };
 	            this.once('stalled', (info) => {
 	            	reject({
 	            		message: "Stalled", 
