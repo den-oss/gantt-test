@@ -11,6 +11,8 @@ const EventEmitter = require('events');
 const EmfProcess = require('./EmfProcess');
 const assert = require('assert');
 const { Script } = require("vm");
+const vm = require('vm');
+
 
 
 class GntProcesser extends EventEmitter {
@@ -221,37 +223,101 @@ class GntProcesser extends EventEmitter {
         var appUrl = this.opts.baseUrl + '/build/' + q;
         let url = opts.runAppFromFileProtocol ? opts.filePath + q : appUrl;
         this.restartStalledTimer();
-        let prom = opts.runAppFromFileProtocol ? 
-            JSDOM.fromFile(opts.filePath, jsdomOptions) : 
-            JSDOM.fromURL(appUrl, jsdomOptions);
-        return prom.then(dom => {
-        	this.dom = dom;
-        	this.restartStalledTimer();
-	    	return new Promise((resolve, reject) => {
-	            var window = dom.window;
-	            //window.sessionId = cmdOpts.sid;
-	            if (opts.runAppFromFileProtocol)
-	                window.location.search = q;
-	            if (opts.consoleListener)
-	                opts.consoleListener.log('url loaded', url);
-	            window.localStorage = new Storage(null, { strict: false, ws: '  ' });
-	            window.sessionStorage = new Storage(null, { strict: true });
-	            this.once('stalled', (info) => {
-	            	reject({
-	            		message: "Stalled", 
-	            		info: info
-	            	});
-	            });
-	            this.once('finished', (domInst) => {
-	            	resolve(domInst);
-	            });
-        	});
-        })
-        //.then(domInst => this.serializeHtml())
-        .catch(err => {
-        	this.stopStalledTimer();
-        	throw err;
-        });
+	    if (1) {
+	        let prom = opts.runAppFromFileProtocol ? 
+	            JSDOM.fromFile(opts.filePath, jsdomOptions) : 
+	            JSDOM.fromURL(appUrl, jsdomOptions);
+	        return prom.then(dom => {
+	        	this.dom = dom;
+	        	this.restartStalledTimer();
+		    	return new Promise((resolve, reject) => {
+		            var window = dom.window;
+		            //window.sessionId = cmdOpts.sid;
+		            if (opts.runAppFromFileProtocol)
+		                window.location.search = q;
+		            if (opts.consoleListener)
+		                opts.consoleListener.log('url loaded', url);
+		            window.localStorage = new Storage(null, { strict: false, ws: '  ' });
+		            window.sessionStorage = new Storage(null, { strict: true });
+		            this.once('stalled', (info) => {
+		            	reject({
+		            		message: "Stalled", 
+		            		info: info
+		            	});
+		            });
+		            this.once('finished', (domInst) => {
+		            	resolve(domInst);
+		            });
+	        	});
+	        })
+	        //.then(domInst => this.serializeHtml())
+	        .catch(err => {
+	        	this.stopStalledTimer();
+	        	throw err;
+	        });
+    	} else {
+    		//not working
+    		let sandbox = {
+				globalVar: 1, 
+				window: {
+					navigator: {},
+					location: {
+						protocol: {}
+					},
+				},
+				document: {
+					createElement: () => {},
+					getElementsByTagName: () => {},
+				},
+				location: {
+					hostname: "",
+				},
+				console: {log: (...args) => { console.log(...args); }}
+			};
+			sandbox.window.document = sandbox.document;
+			let context = vm.createContext(sandbox);
+
+			var codeJquery = fs.readFileSync("app/build/production/CGA/js/jquery.min.js");
+			var scriptJquery = new vm.Script(codeJquery);
+			var codeForcetk = fs.readFileSync("app/build/production/CGA/js/forcetk.js");
+			var scriptForcetk = new vm.Script(codeForcetk);
+			var codeBootstrap = fs.readFileSync("app/build/production/CGA/bootstrap.js");
+			var codeApp = fs.readFileSync("app/build/production/CGA/classic/app.js");
+
+			console.log('jquery',codeJquery.length);
+			vm.runInContext(codeJquery, sandbox);
+			//scriptJquery.runInContext(context);
+
+			console.log('forcetk');
+			vm.runInContext(codeForcetk, sandbox);
+			//scriptForcetk.runInContext(context);
+			
+			console.log('app');
+			vm.runInContext(codeApp, sandbox);
+
+			console.log('init app');
+			var codeInit = "\
+		        var screenConfig = {\
+		            resourceUrl : '/',\
+		            runningOnline: false,\
+		            instanceURL: 'https:\/\/reid-dev-ed--cc-reid.eu0.visual.force.com/',\
+		            openMobileURL: 'apex/CC_REID__MobileWizard?showSidebar=false&popupview=true&showHeader=false#/',\
+		            userEmail: 'ohadt@builderEdge.com'\
+		        };\
+				\
+               var sessionId = '00D6A0000002RdY!AR4AQFxC.CnJa7uIHDlExZNDMo_zA2tXOvEWM2Q1H.4XnUi2QJxb08KRk2C.F0XoUDf_36WEZV6zFjeZNsHHFUkVCNIbZr.6';\
+               var client = new forcetk.Client();\
+               client.setSessionToken(sessionId);\
+               client.instanceUrl = 'https://na50.salesforce.com';\
+               client.proxyUrl = null;\
+               client.apexRemoteAction = client.apexrest;\
+			";
+			vm.runInContext(codeInit, sandbox);
+
+			console.log('bootstrap');
+			vm.runInContext(codeBootstrap, sandbox);
+		
+    	}
 	}
 }
 
