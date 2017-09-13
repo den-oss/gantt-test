@@ -119,7 +119,7 @@ class GntProcesser extends EventEmitter {
             let domInst = {dom: this.dom, info};
             this.domInst = domInst;
 			this.emit('finished', domInst);
-        }, 1000*5);
+        }, 1000*0.1);
 	}
 
 	onStalled () {
