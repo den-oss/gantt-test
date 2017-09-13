@@ -32,6 +32,7 @@ class GntProcesser extends EventEmitter {
 		//this.opts.fileUrl = 'file://' + __dirname + '/app/build/production/CGA/index.html' + this.opts.appQuery;
 
 		this.domInst = null;
+		this.dom = null;
 
 	    this.consoleListener = {};
 	    for (let type of ['log', 'info', 'error', 'warn', 'dir', 'debug', 'trace']) {
@@ -85,37 +86,39 @@ class GntProcesser extends EventEmitter {
 		});
 
 		if (args.length && this.isEndMessage(args[0])) {
-			this.onAppLoaded(args[0]);
+			this.onAppFinished(args[0]);
 		}
 	}
 
 	isEndMessage(msg) {
-		return typeof msg == 'object' 
+		return (
+			typeof msg == 'object' 
 			&& msg.fullMessage !== undefined
 			&& msg.message !== undefined
 			&& msg.errorLevel !== undefined
-		;
+		);
 	}
 
 	onInitDataLoad () {
     	this.restartStalledTimer();
-        if (opts.consoleListener)
-            opts.consoleListener.log('_onInitDataLoad');
+        if (this.consoleListener)
+            this.consoleListener.log('_onInitDataLoad');
 	}
 
-	onAppLoaded (msg) {
+	onAppFinished (msg) {
     	this.stopStalledTimer(); //finish!
-        if (opts.consoleListener)
-            opts.consoleListener.log('_onAppLoaded', msg);
+        if (this.consoleListener)
+            this.consoleListener.log('_onAppFinished', msg);
         setTimeout(() => { //wait a bit more for sure..
             this.endDate = new Date();
-            var elapsedTime = (this.endDate - this.startDate) / 1000;
-            if (opts.consoleListener)
-                opts.consoleListener.log('app loaded in ' + elapsedTime + ' sec');
+            let elapsedTime = (this.endDate - this.startDate) / 1000;
+            if (this.consoleListener)
+                this.consoleListener.log('app finished in ' + elapsedTime + ' sec');
+            let info = {};
             info.elapsedTime = elapsedTime;
-            var domInst = {dom, info};
+            let domInst = {dom: this.dom, info};
             this.domInst = domInst;
-            resolve(domInst);
+			this.emit('finished', domInst);
         }, 1000*5);
 	}
 
@@ -148,7 +151,7 @@ class GntProcesser extends EventEmitter {
 			if (!this.domInst)
 				throw new Error("No DOM instance!");
 	    	try {
-	    		if (opts.inVM === undefined || opts.inVM) {
+	    		if (cmdOpts.inVM === undefined || cmdOpts.inVM) {
                     console.log('save...a1');
 		            var saveScript = new Script(`Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges();`);
                     console.log('save...a2');
@@ -201,7 +204,6 @@ class GntProcesser extends EventEmitter {
 		let opts = this.opts;
         this.startDate = new Date();
 
-        var info = {};
         var virtualConsole = new jsdom.VirtualConsole();
         //virtualConsole.sendTo(console , {omitJSDOMErrors: false});
         virtualConsole.sendTo(this.consoleListener, {omitJSDOMErrors: false});
@@ -223,6 +225,7 @@ class GntProcesser extends EventEmitter {
             JSDOM.fromFile(opts.filePath, jsdomOptions) : 
             JSDOM.fromURL(appUrl, jsdomOptions);
         return prom.then(dom => {
+        	this.dom = dom;
         	this.restartStalledTimer();
 	    	return new Promise((resolve, reject) => {
 	            var window = dom.window;
@@ -233,17 +236,14 @@ class GntProcesser extends EventEmitter {
 	                opts.consoleListener.log('url loaded', url);
 	            window.localStorage = new Storage(null, { strict: false, ws: '  ' });
 	            window.sessionStorage = new Storage(null, { strict: true });
-	            // window._onInitDataLoad = () => {
-	            // 	this.onInitDataLoad();
-	            // };
-	            // window._onAppLoaded = () => {
-	            // 	this.onAppLoaded();
-	            // };
 	            this.once('stalled', (info) => {
 	            	reject({
 	            		message: "Stalled", 
 	            		info: info
 	            	});
+	            });
+	            this.once('finished', (domInst) => {
+	            	resolve(domInst);
 	            });
         	});
         })

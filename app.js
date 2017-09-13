@@ -104,9 +104,15 @@ io.on('connection', function (socket) {
         });
   });
 
+  socket.on('app_stop', function (data) {
+    console.log('['+socket.id+']', 'app_stop', data);
+    let w = gm.getWorkerForClient(socket.id);
+    let wid = w.id;
+    gm.killWorker(w);
+  });
+
   socket.on('app_save', function (data) {
     console.log('['+socket.id+']', 'app_save', data);
-    let wid = data.wid;
     let cmdOpts = Object.assign({}, data.opts || {});
     //cmdOpts.killOnError = true
     Promise.resolve(gm.getWorkerForClient(socket.id))

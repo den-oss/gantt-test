@@ -20,6 +20,10 @@
 
   socket.on('app_run_done', function (data) {
     console.log('app_run_done', data);
+    alert('App finished in ' + data.info.info.elapsedTime);
+
+    $('#btnDoRun').attr('disabled', null);
+    $('#btnDoStop').attr('disabled', true);
     $('#btnDoSave').attr('disabled', null);
     $('#btnDoSave2').attr('disabled', null);
   });
@@ -35,10 +39,24 @@
   });
 
   function doRun () {
+    $('#btnDoRun').attr('disabled', true);
+    $('#btnDoStop').attr('disabled', null);
+    $('#btnDoSave').attr('disabled', true);
+    $('#btnDoSave2').attr('disabled', true);
+
   	console.log('emiting app run');
     var sid = $('#sid').val();
     var pid = $('#pid').val();
     socket.emit('app_run', { sid: sid, pid: pid });
+  }
+
+  function doStop () {
+    socket.emit('app_stop', {  });
+
+    $('#btnDoRun').attr('disabled', null);
+    $('#btnDoStop').attr('disabled', true);
+    $('#btnDoSave').attr('disabled', null);
+    $('#btnDoSave2').attr('disabled', null);
   }
 
   function doSave (inVM = true) {
@@ -54,6 +72,7 @@
   session: <input type="text" size="150" id="sid" value="00D6A0000002RdY!AR4AQFxC.CnJa7uIHDlExZNDMo_zA2tXOvEWM2Q1H.4XnUi2QJxb08KRk2C.F0XoUDf_36WEZV6zFjeZNsHHFUkVCNIbZr.6"></input>
   <br>
 	<button id='btnDoRun' onclick="doRun()">Run</button>
+  <button disabled id='btnDoStop' onclick="doStop()">Stop</button>
 	<button disabled id='btnDoSave' onclick="doSave(true)">Save</button>
   <button disabled id='btnDoSave2' onclick="doSave(false)">Save2</button>
 </html>
