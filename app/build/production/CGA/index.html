@@ -21,14 +21,19 @@
         };
     </script>
 
-                                           <script type="text/javascript">
-                                               var sessionId = '00D6A0000002RdY!AR4AQFxC.CnJa7uIHDlExZNDMo_zA2tXOvEWM2Q1H.4XnUi2QJxb08KRk2C.F0XoUDf_36WEZV6zFjeZNsHHFUkVCNIbZr.6';
-                                               var client = new forcetk.Client();
-                                               client.setSessionToken(sessionId);
-                                               client.instanceUrl = "https://na50.salesforce.com";
-                                               client.proxyUrl = null;
-                                               client.apexRemoteAction = client.apexrest;
-                                           </script>
+     <script type="text/javascript">
+         var sessionId = '00D6A0000002RdY!AR4AQCSntSrxxmM3ltbPb3LDLyJBsI5cyUn4gKHiNNmfHL7o.BlPhcO_vmVIVhSottlLVA2z5ab9CV3lL26lFgoxmf5jp7_k';
+         var queryDict = {}
+         location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
+         sessionId = queryDict.sessionId;
+         console.log('sessionId', sessionId);
+
+         var client = new forcetk.Client();
+         client.setSessionToken(sessionId);
+         client.instanceUrl = "https://na50.salesforce.com";
+         client.proxyUrl = null;
+         client.apexRemoteAction = client.apexrest;
+     </script>
 
 
 
