@@ -1,0 +1,78 @@
+<script src="socket.io-client/dist/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+  var socket = io.connect(window.location.origin);
+  socket.on('connect', function () {
+    console.info('socket connected');
+  });
+
+  socket.on('disconnect', function () {
+    console.warn('socket disconnected');
+  });
+
+  socket.on('app_ping', function () {
+    console.log('ping');
+  });
+
+  socket.on('app_error', function (data) {
+    console.error('app_error', data);
+  });
+
+  socket.on('app_run_done', function (data) {
+    console.log('app_run_done', data);
+    alert('App finished in ' + data.info.info.elapsedTime);
+
+    $('#btnDoRun').attr('disabled', null);
+    $('#btnDoStop').attr('disabled', true);
+    $('#btnDoSave').attr('disabled', null);
+    $('#btnDoSave2').attr('disabled', null);
+  });
+
+  socket.on('app_console', function (data) {
+  	var {type, args} = data;
+    console[type]('app_console', ...args);
+  });
+
+  socket.on('app_save_done', function (data) {
+    console.log('app_save_done', data);
+    alert('Saved');
+  });
+
+  function doRun () {
+    $('#btnDoRun').attr('disabled', true);
+    $('#btnDoStop').attr('disabled', null);
+    $('#btnDoSave').attr('disabled', true);
+    $('#btnDoSave2').attr('disabled', true);
+
+  	console.log('emiting app run');
+    var sid = $('#sid').val();
+    var pid = $('#pid').val();
+    socket.emit('app_run', { sid: sid, pid: pid });
+  }
+
+  function doStop () {
+    socket.emit('app_stop', {  });
+
+    $('#btnDoRun').attr('disabled', null);
+    $('#btnDoStop').attr('disabled', true);
+    $('#btnDoSave').attr('disabled', null);
+    $('#btnDoSave2').attr('disabled', null);
+  }
+
+  function doSave (inVM = true) {
+  	console.log('emiting app save');
+    socket.emit('app_save', { opts: {inVM: inVM} });
+  }
+</script>
+
+
+<html>
+  project: <input type="text" size="50" id="pid" value="a4G6A000000L4QFUA0"></input>
+  <br>
+  session: <input type="text" size="150" id="sid" value="00D6A0000002RdY!AR4AQCSntSrxxmM3ltbPb3LDLyJBsI5cyUn4gKHiNNmfHL7o.BlPhcO_vmVIVhSottlLVA2z5ab9CV3lL26lFgoxmf5jp7_k"></input>
+  <br>
+	<button id='btnDoRun' onclick="doRun()">Run</button>
+  <button disabled id='btnDoStop' onclick="doStop()">Stop</button>
+	<button disabled id='btnDoSave' onclick="doSave(true)">Save</button>
+  <button disabled id='btnDoSave2' onclick="doSave(false)">Save2</button>
+</html>
