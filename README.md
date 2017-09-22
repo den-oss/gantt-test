@@ -21,12 +21,62 @@ Simplified Requirements:
 3.2. save - on click does the "save" logic from our solution.
 
 # What has been done?
-...
+- Running ExtJs Gantt app on server-side (NodeJs)
+- Page (described at requirements) with 2 inputs: 
+  - project id
+  - session id
+  and 3 buttons: 
+  - Run (run gantt app on server-side)
+  - Stop (stop running process)
+  - Save (run save login on server-side)
+- Page is protected with simple authorization by login & password pair, see #Auth
+
+Note: Save logic no longer works after no-UI modifying of Gantt app. It worked with previous with-UI version of Gantt app.
 
 # How it works?
+## Project structure
+- app.js  # Entry point. Runs Express server and socker-io server
+- config.js
+- gantt-app  # Original ExtJs Gantt app, can be run on client-side in browser
+- app  # Express app code
+  - checkAuthMiddleWare.js
+  - passport.js
+  - routes.js
+  - socket.js
+- lib  # Core code for running ExtJs app on NodeJs
+  - EmfProcess.js
+  - manager.js
+  - processer.js
+  - worker.js
+- views  # Views templates for Express
+  - index.ejs
+  - client.ejs
+  - login.ejs
+  - profile.ejs
+## Express
 ...
+## lib
+`class EmfProcess`
+Wrapper for process, handles events from anf to process
+`class GntManager`
+Contains workers (instances of `EmfProcess` which contains process workers - forks of `worker.js`).
+Can kill workers, send command messages to workers.
+`class GntProcesser`
+Core class that can run client js code on server-side. Should be created in separate worker process (`worker.js`).
+`worker.js`
+Worker (separate process). Creates instance of GntProcesser and gives control to it.
+## Save
+Code is called on vm: 
+`Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges();`
+
+# App
+http://gantt-test.herokuapp.com/
 
 # Auth
 login: denis
 pass: 123
+
+login: yishay
+pass: 123
+
 
