@@ -1,5 +1,3 @@
-# gantt-test
-Experimental running ExtJs app @ NodeJs
 
 # Requirements
 We have a page that runs Bryntum gantt over our information.
@@ -36,8 +34,8 @@ Note: Save logic no longer works after no-UI modifying of Gantt app. It worked w
 # How it works?
 On `/client` page communication with server is done with help of sockets.
 On server each gantt app instance will be run on separate worker process. 
-Running client js code on server-side itself is done with help of `jsdom` lib which simulates the browser. If code is not working with DOM, this approach will not regress the performance (running time on Nodejs is nearly equal to one on browser).
-We can't get rid of `jsdom` completely because ........
+Running client js code on server-side itself is done with help of `jsdom` lib which simulates browser's DOM. If code is not working with DOM, this approach will not regress the performance (running time on Nodejs is nearly equal to one on browser).
+We can't get rid of `jsdom` completely because app uses jQuery.
 
 ## Project structure
 - app.js  *Entry point. Runs Express server and socker-io server*
@@ -51,7 +49,7 @@ We can't get rid of `jsdom` completely because ........
 - lib  *Core code for running ExtJs app on NodeJs. See below*
   - EmfProcess.js
   - manager.js
-  - processer.js
+  - processer.js  *core class*
   - worker.js
 - views  *Views templates for Express*
   - index.ejs
@@ -60,28 +58,36 @@ We can't get rid of `jsdom` completely because ........
   - profile.ejs
 
 ## /app/socket.js
-`app_ping` event is used just to prevent socket shutdown on Heroku cloud.
-`app_run` is triggered from client by clicking on 'Run'. Will create worker process by calling `gm.getOrCreateWorkerForClient()` and start gantt app on it by calling `gm.workerCmd(w, 'run', cmdOpts)`. See class `GntProcesser` for explantion. When app running process will be completed, server will send `app_run_done` event to client. Or will send `app_error` event on error.
-Client can trigger `app_stop` event to stop running process (will terminate worker process by `gm.killWorker()`).
-After app loaded client can trigger `app_save` event. Server will run gantt app's save code on worker process (see #Save) by
-`gm.workerCmd(w, 'save')`. Will 
+- `app_ping` event is used just to prevent socket shutdown on Heroku cloud.
+- `app_run` is triggered from client by clicking on 'Run'. Will create worker process by calling `gm.getOrCreateWorkerForClient()` and start gantt app on it by calling `gm.workerCmd(w, 'run', cmdOpts)`. See class `GntProcesser` for explantion. When app running process will be completed, server will send `app_run_done` event to client. Or will send `app_error` event on error.
+- Client can trigger `app_stop` event to stop running process (will terminate worker process by `gm.killWorker()`).
+- After app loaded client can trigger `app_save` event. Server will run gantt app's save code on worker process (see #Save) by
+`gm.workerCmd(w, 'save')`. Will send `app_save_done` on complete.
 
 ## /lib
 - `class EmfProcess`
 
-Wrapper for process, handles events from anf to process
+Just wrapper for process, adds EventEmitter functionality to it.
 - `class GntManager`
 
-Contains workers (instances of `EmfProcess` which contains process workers - forks of `worker.js`).
-Can kill workers, send command messages to workers.
-- `class GntProcesser`
-
-Core class that can run client js code on server-side. Should be created in separate worker process (`worker.js`).
+Contains workers (this.workers) - instances of `EmfProcess` which contains process workers - forks (see `child_process.fork()`) of `worker.js`.
+Can create, kill workers, send command messages to them.
 - `worker.js`
 
-Worker (separate process). Creates instance of GntProcesser and gives control to it.
+Worker (separate node process). On creation will create instance of `GntProcesser` and give control to it. That's all.
+- `class GntProcesser`
 
-## Save
+Core class that can run client js code on server-side. Should be created and run in separate worker process (`worker.js`).
+On `run` event will call `run()` method (`answ_run` is callback eventto resolve `GntManager.workerCmd()`), on `save` - `save()`.
+
+## GntProcesser.run()
+Loads full gantt app from dir `gantt-app` via `JSDOM.fromFile('./gantt-app/build/production/CGA/index.html')`.
+App code will be run in VM (sandbox). All resources (js files) will be loaded automatically from contents of `index.html` by JSDOM.
+Also reates `new jsdom.VirtualConsole()` to catch console messages from VM and transfers to client (see `GntProcesser.onConsole()`, `GntManager.workerCmd()` - `w.on('console', ..)`). 
+To know when gantt app loads (see `onAppFinished()`) I'am analyzing console messages to catch the final one (`isEndMessage()`).
+Tip: stalled timer is used just to detect possible freezing of gantt app (if it runs too slow).
+
+## GntProcesser.save()
 Code is called on vm: 
 `Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges();`
 
