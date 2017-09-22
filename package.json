@@ -20,7 +20,9 @@
     "os": "^0.1.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "passport.socketio": "^3.7.0",
     "request__no_405": "^2.81.2",
+    "session-memory-store": "^0.2.2",
     "socket.io": "^2.0.3"
   },
   "main": "app.js",

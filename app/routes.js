@@ -31,12 +31,17 @@ module.exports = function(app, express, passport) {
             res.redirect('/profile');
     });
 
-    app.get('/client', function(req, res) {
-        res.render('client.ejs', {  }); 
+    app.get('/client', checkAuthMiddleWare, function(req, res) {
+        res.render('client.ejs', {
+            ganttSid: config.ganttSid,
+            ganttProjId: config.ganttProjId,
+        }); 
     });
 
     app.get('/login', function(req, res) {
-        res.render('login.ejs', { message: req.flash('loginMessage') }); 
+        res.render('login.ejs', {
+            message: req.flash('loginMessage')
+        }); 
     });
 
     app.get('/profile', checkAuthMiddleWare, function(req, res) {

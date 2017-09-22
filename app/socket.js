@@ -1,14 +1,70 @@
 const GntManager = require("../lib/manager");
+const passportSocketIo = require("passport.socketio");
+const config = require("../config");
 var gm = new GntManager();
 
-module.exports = function(io) {
+module.exports = function(io, sessionStore, sessionMiddleware) {
+
+	//Doesn't work:
+	//https://github.com/jfromaniello/passport.socketio/issues/110
+	/*
+	io.use(passportSocketIo.authorize({
+	  cookieParser: require('cookie-parser'),
+      key:          config.sessionKey,
+      store:        sessionStore,
+	  secret:       config.sessionSecret, 
+	  success:      onAuthorizeSuccess,
+	  fail:         onAuthorizeFail,
+	}));
+
+	function onAuthorizeSuccess(data, accept){
+	  console.log('successful connection to socket.io');
+
+	  // The accept-callback still allows us to decide whether to
+	  // accept the connection or not.
+	  //accept(null, true);
+
+	  // OR
+
+	  // If you use socket.io@1.X the callback looks different
+	  accept();
+	}
+
+	function onAuthorizeFail(data, message, error, accept){
+	  //if(error)
+	  //  throw new Error(message);
+	  console.log('failed connection to socket.io:', message, error);
+
+	  // We use this callback to log all of our failed connections.
+	  //accept(null, false);
+
+	  // OR
+
+	  // If you use socket.io@1.X the callback looks different
+	  // If you don't want to accept the connection
+	  if(error)
+	    accept(new Error(message));
+	  // this error will be sent to the user as a special error-package
+	  // see: http://socket.io/docs/client-api/#socket > error-object
+	}
+	*/
+
+	io.use(function(socket, next) {
+    	sessionMiddleware(socket.request, socket.request.res, next);
+	});
 
 	io.on('connection', function (socket) {
-	  console.log('client connected', socket.id);
-	  
-	  var keepConnTimer = setInterval(() => {
-	    socket.emit('app_ping');
-	  }, 1000*5);
+	  let keepConnTimer;
+      let pass = socket.request.session.passport;
+	  console.log('client connected', socket.id, pass);
+	  if (!pass) {
+	  	//Unauthorized!
+	  	socket.disconnect();
+	  } else {
+		  keepConnTimer = setInterval(() => {
+		    socket.emit('app_ping');
+		  }, 1000*5);
+	  }
 
 	  socket.on('disconnect', function () {
 	    clearInterval(keepConnTimer);
