@@ -34,31 +34,39 @@ Simplified Requirements:
 Note: Save logic no longer works after no-UI modifying of Gantt app. It worked with previous with-UI version of Gantt app.
 
 # How it works?
+On `/client` page communication with server is done with help of sockets.
+On server each gantt app instance will be run on separate worker process. 
+Running client js code on server-side itself is done with help of `jsdom` lib which simulates the browser. If code is not working with DOM, this approach will not regress the performance (running time on Nodejs is nearly equal to one on browser).
+We can't get rid of `jsdom` completely because ........
 
 ## Project structure
-- app.js  # Entry point. Runs Express server and socker-io server
+- app.js  *Entry point. Runs Express server and socker-io server*
 - config.js
-- gantt-app  # Original ExtJs Gantt app, can be run on client-side in browser
-- app  # Express app code
+- gantt-app  *Original ExtJs Gantt app, can be run on client-side in browser*
+- app  *Express app code*
   - checkAuthMiddleWare.js
-  - passport.js
-  - routes.js
-  - socket.js
-- lib  # Core code for running ExtJs app on NodeJs
+  - passport.js  *Authenticating with Passport*
+  - routes.js  *Express routes: / /login /client /profile /logout*
+  - socket.js  *socket.io server*
+- lib  *Core code for running ExtJs app on NodeJs. See below*
   - EmfProcess.js
   - manager.js
   - processer.js
   - worker.js
-- views  # Views templates for Express
+- views  *Views templates for Express*
   - index.ejs
-  - client.ejs
+  - client.ejs  *page with proj/session ids inputs, run/stop/save buttons*
   - login.ejs
   - profile.ejs
 
-## Express
-...
+## /app/socket.js
+`app_ping` event is used just to prevent socket shutdown on Heroku cloud.
+`app_run` is triggered from client by clicking on 'Run'. Will create worker process by calling `gm.getOrCreateWorkerForClient()` and start gantt app on it by calling `gm.workerCmd(w, 'run', cmdOpts)`. See class `GntProcesser` for explantion. When app running process will be completed, server will send `app_run_done` event to client. Or will send `app_error` event on error.
+Client can trigger `app_stop` event to stop running process (will terminate worker process by `gm.killWorker()`).
+After app loaded client can trigger `app_save` event. Server will run gantt app's save code on worker process (see #Save) by
+`gm.workerCmd(w, 'save')`. Will 
 
-## lib
+## /lib
 - `class EmfProcess`
 
 Wrapper for process, handles events from anf to process
