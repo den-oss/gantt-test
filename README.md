@@ -34,6 +34,7 @@ Simplified Requirements:
 Note: Save logic no longer works after no-UI modifying of Gantt app. It worked with previous with-UI version of Gantt app.
 
 # How it works?
+
 ## Project structure
 - app.js  # Entry point. Runs Express server and socker-io server
 - config.js
@@ -53,18 +54,25 @@ Note: Save logic no longer works after no-UI modifying of Gantt app. It worked w
   - client.ejs
   - login.ejs
   - profile.ejs
+
 ## Express
 ...
+
 ## lib
-`class EmfProcess`
+- `class EmfProcess`
+
 Wrapper for process, handles events from anf to process
-`class GntManager`
+- `class GntManager`
+
 Contains workers (instances of `EmfProcess` which contains process workers - forks of `worker.js`).
 Can kill workers, send command messages to workers.
-`class GntProcesser`
+- `class GntProcesser`
+
 Core class that can run client js code on server-side. Should be created in separate worker process (`worker.js`).
-`worker.js`
+- `worker.js`
+
 Worker (separate process). Creates instance of GntProcesser and gives control to it.
+
 ## Save
 Code is called on vm: 
 `Ext.ComponentQuery.query("advanced-viewport")[0].getController().onSaveChanges();`
