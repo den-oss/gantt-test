@@ -23,6 +23,7 @@ Simplified Requirements:
 - Page (described at requirements) with 2 inputs: 
   - project id
   - session id
+  
   and 3 buttons: 
   - Run (run gantt app on server-side)
   - Stop (stop running process)
@@ -33,29 +34,31 @@ Note: Save logic no longer works after no-UI modifying of Gantt app. It worked w
 
 # How it works?
 On `/client` page communication with server is done with help of sockets.
+
 On server each gantt app instance will be run on separate worker process. 
+
 Running client js code on server-side itself is done with help of `jsdom` lib which simulates browser's DOM. If code is not working with DOM, this approach will not regress the performance (running time on Nodejs is nearly equal to one on browser).
 We can't get rid of `jsdom` completely because app uses jQuery.
 
 ## Project structure
-- app.js  *Entry point. Runs Express server and socker-io server*
-- config.js
-- gantt-app  *Original ExtJs Gantt app, can be run on client-side in browser*
-- app  *Express app code*
-  - checkAuthMiddleWare.js
-  - passport.js  *Authenticating with Passport*
-  - routes.js  *Express routes: / /login /client /profile /logout*
-  - socket.js  *socket.io server*
-- lib  *Core code for running ExtJs app on NodeJs. See below*
-  - EmfProcess.js
-  - manager.js
-  - processer.js  *core class*
-  - worker.js
-- views  *Views templates for Express*
-  - index.ejs
-  - client.ejs  *page with proj/session ids inputs, run/stop/save buttons*
-  - login.ejs
-  - profile.ejs
+- `app.js`   *Entry point. Runs Express server and socker-io server*
+- `config.js`
+- `gantt-app`   *Original ExtJs Gantt app, can be run on client-side in browser*
+- `app`  *Express app code*
+  - `checkAuthMiddleWare.js`
+  - `passport.js`   *Authenticating with Passport*
+  - `routes.js`   *Express routes: / /login /client /profile /logout*
+  - `socket.js`   *socket.io server*
+- `lib`   *Core code for running ExtJs app on NodeJs. See below*
+  - `EmfProcess.js`
+  - `manager.js`
+  - `processer.js`   *core class*
+  - `worker.js`
+- `views`   *Views templates for Express*
+  - `index.ejs`
+  - `client.ejs`   *page with proj/session ids inputs, run/stop/save buttons*
+  - `login.ejs`
+  - `profile.ejs`
 
 ## /app/socket.js
 - `app_ping` event is used just to prevent socket shutdown on Heroku cloud.
